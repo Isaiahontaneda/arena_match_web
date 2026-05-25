@@ -1,50 +1,52 @@
-{% extends 'base.html' %}
-{% block title %}{{ 'Editar' if torneo else 'Nuevo' }} Torneo — Arena-Match{% endblock %}
-{% block content %}
+{% extends "base.html" %}
+{% block title %}Nueva Partida — Arena Match{% endblock %}
 
+{% block content %}
 <div class="page-header">
-    <h1>🏆 {{ 'Editar' if torneo else 'Nuevo' }} Torneo</h1>
-    <a href="{{ url_for('torneos') }}" class="btn">← Volver</a>
+  <h1 class="page-title">⚔ Nueva Partida</h1>
+  <a href="{{ url_for('partidas') }}" class="btn btn-secondary">← Volver</a>
 </div>
 
-<div class="section-card form-card">
-    <form method="POST">
-        <div class="form-group">
-            <label>Nombre del Torneo *</label>
-            <input type="text" name="nombre" required
-                   value="{{ torneo.NombreTorneo if torneo else '' }}"
-                   placeholder="Ej: Copa Valorant 2026">
-        </div>
-        <div class="form-group">
-            <label>Videojuego *</label>
-            <select name="videojuego_id" required>
-                <option value="">— Seleccionar —</option>
-                {% for v in videojuegos %}
-                <option value="{{ v.ID_Videojuego }}"
-                    {{ 'selected' if torneo and torneo.ID_Videojuego == v.ID_Videojuego else '' }}>
-                    {{ v.NombreJuego }}
-                </option>
-                {% endfor %}
-            </select>
-        </div>
-        <div class="form-row">
-            <div class="form-group">
-                <label>Fecha de Inicio *</label>
-                <input type="datetime-local" name="fecha_inicio" required
-                       value="{{ torneo.FechaInicio if torneo else '' }}">
-            </div>
-            <div class="form-group">
-                <label>Fecha de Fin *</label>
-                <input type="datetime-local" name="fecha_fin" required
-                       value="{{ torneo.FechaFin if torneo else '' }}">
-            </div>
-        </div>
-        <div class="form-actions">
-            <button type="submit" class="btn btn-primary">
-                {{ 'Guardar Cambios' if torneo else 'Crear Torneo' }}
-            </button>
-            <a href="{{ url_for('torneos') }}" class="btn">Cancelar</a>
-        </div>
+<div class="card" style="max-width:560px;">
+  <div class="card-header">Registrar Partida</div>
+  <div class="card-body">
+    <form method="POST" action="{{ url_for('partida_nueva') }}">
+
+      <div class="form-group">
+        <label class="form-label">Torneo</label>
+        <select name="torneo_id" class="form-control" required>
+          <option value="" disabled selected>Selecciona un torneo</option>
+          {% for t in torneos %}
+            <option value="{{ t['ID_Torneo'] }}">{{ t['NombreTorneo'] }}</option>
+          {% endfor %}
+        </select>
+        {% if not torneos %}
+          <small style="color:var(--accent-orange); font-size:0.75rem; margin-top:0.3rem; display:block;">
+            ⚠ No hay torneos en estado "Inscripciones Abiertas" o "En Curso".
+          </small>
+        {% endif %}
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Árbitro</label>
+        <select name="arbitro_id" class="form-control" required>
+          <option value="" disabled selected>Selecciona un árbitro</option>
+          {% for a in arbitros %}
+            <option value="{{ a['ID_Arbitro'] }}">{{ a['NombreCompleto'] }}</option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Fecha y Hora</label>
+        <input type="datetime-local" name="fecha_hora" class="form-control" required />
+      </div>
+
+      <div style="display:flex; gap:0.75rem; margin-top:1.5rem;">
+        <button type="submit" class="btn btn-primary w-100">⚔ Crear Partida</button>
+        <a href="{{ url_for('partidas') }}" class="btn btn-secondary">Cancelar</a>
+      </div>
     </form>
+  </div>
 </div>
 {% endblock %}
